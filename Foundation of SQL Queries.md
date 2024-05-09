@@ -1,4 +1,4 @@
-**Day 1: Foundation of SQL Queries**
+**Foundation of SQL Queries**
 
 **Introduction to SQL and its Applications**
 
