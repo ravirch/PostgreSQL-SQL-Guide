@@ -22,6 +22,7 @@ SQL (Structured Query Language) is a powerful tool used for managing and manipul
 - Filtering Groups with HAVING Clause
 
 ### Day 3: [Mastering Joins and Subqueries](https://github.com/ravirch/SQL-Quest/blob/main/Mastering%20Joins%20and%20Subqueries.md)
+- [Additional note on Joins in SQL](https://github.com/ravirch/SQL-Quest/blob/main/Joins%20in%20SQL.pdf)
 - Understanding JOINs in SQL
 - Performing Inner Joins, Outer Joins, and Cross Joins
 - Working with Subqueries
