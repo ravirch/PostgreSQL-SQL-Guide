@@ -1,0 +1,48 @@
+-- Create Employees table
+CREATE TABLE Employees (
+    EmployeeID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    DepartmentID INT
+);
+
+-- Create Products table
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Price DECIMAL(10, 2),
+    DepartmentID INT
+);
+
+-- Create Departments table
+CREATE TABLE Departments (
+    DepartmentID INT PRIMARY KEY,
+    Name VARCHAR(100)
+);
+
+-- Insert data into Employees table
+INSERT INTO Employees (EmployeeID, Name, DepartmentID)
+VALUES
+    (1, 'John Doe', 1),
+    (2, 'Jane Smith', 2),
+    (3, 'Michael Johnson', 1),
+    (4, 'Emily Brown', 3),
+    (5, 'David Miller', 1),
+    (6, 'Sarah Lee', 2),
+    (7, 'Chris Evans', 3);
+
+-- Insert data into Products table
+INSERT INTO Products (ProductID, Name, Price, DepartmentID)
+VALUES
+    (101, 'Laptop', 899.99, 1),
+    (102, 'Smartphone', 599.99, 2),
+    (103, 'Printer', 249.99, 3),
+    (104, 'Headphones', 149.99, 1),
+    (105, 'Monitor', 329.99, 2),
+    (106, 'Keyboard', 49.99, 3);
+
+-- Insert data into Departments table
+INSERT INTO Departments (DepartmentID, Name)
+VALUES
+    (1, 'IT'),
+    (2, 'Marketing'),
+    (3, 'Sales');
