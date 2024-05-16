@@ -43,15 +43,3 @@ CREATE TABLE products (
     CONSTRAINT unique_product_name UNIQUE (product_name)
 );
 ```
-
-**Review and Final Practice Exercises**
-
-It's essential to review the concepts covered throughout the session and provide participants with practice exercises to reinforce their understanding. Encourage them to create tables, write queries, and apply the learned concepts to real-world scenarios.
-
-**Final Exercises:**
-
-1. Create a table to store employee information with appropriate constraints.
-2. Write a query to retrieve the top 5 highest-paid employees.
-3. Create a table to store customer orders with proper foreign key constraints.
-
----
