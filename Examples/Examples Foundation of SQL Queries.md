@@ -1,200 +1,126 @@
-### Foundation of SQL Queries
+### **Examples: Foundation of SQL Queries**
 
-#### **1. Introduction to SQL and its Applications**
-
-**Structured Query Language (SQL)** is the standard language used to interact with relational databases. It allows you to define, manipulate, query, and control access to data stored in a database. Whether you want to retrieve specific information, update records, or enforce data integrity, SQL provides a comprehensive set of commands to handle these tasks.
-
-- **Applications of SQL:**
-  - **Data Retrieval:** Use SQL to extract data from one or more tables using the `SELECT` statement.
-  - **Data Insertion and Updates:** Add new data to the database using the `INSERT` command or modify existing data using `UPDATE`.
-  - **Data Deletion:** Remove data with the `DELETE` command.
-  - **Data Definition:** Create or modify tables and their structure using `CREATE` and `ALTER` commands.
-  - **Data Access Control:** Manage user permissions and security using commands like `GRANT` and `REVOKE`.
-
-- **Common SQL Use Cases:**
-  - **Data Analysis:** Extracting, aggregating, and filtering data for reporting and analysis.
-  - **Backend Operations:** Managing user data and metadata for applications.
-  - **Database Administration:** Structuring databases, optimizing performance, and ensuring data integrity.
-
-**Example:**
-If you want to view a list of all employees in an organization, you would use a `SELECT` statement to retrieve data from the `Employees` table.
-
----
-
-#### **2. Retrieving Data with the SELECT Statement**
-
-The `SELECT` statement is the primary command used to retrieve data from a database. It allows you to specify which columns to view, apply conditions, and even manipulate how data is displayed.
-
-**Syntax:**
 ```sql
-SELECT column1, column2, ...
-FROM table_name;
-```
+-- ====================================================
+-- SETUP: Creating Tables for Practice
+-- ====================================================
 
-- **Key Components:**
-  - **`SELECT`**: Specifies the columns to retrieve.
-  - **`FROM`**: Specifies the table to pull the data from.
+-- Creating a sample "Employees" table
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,  -- Auto-incrementing ID
+    name VARCHAR(50) NOT NULL,  -- Employee Name
+    role VARCHAR(50) NOT NULL,  -- Job Role
+    hire_date DATE,  -- Date of Hiring
+    salary NUMERIC(10, 2),  -- Salary of Employee
+    department VARCHAR(50)  -- Department Name
+);
 
-**Examples:**
-1. **Select all columns from a table:**
-   ```sql
-   SELECT * FROM employees;
-   ```
-   This query retrieves all columns from the `employees` table.
+-- Inserting sample data into the "Employees" table
+INSERT INTO employees (name, role, hire_date, salary, department) VALUES
+('Alice Johnson', 'Manager', '2018-05-15', 75000, 'HR'),
+('Bob Smith', 'Developer', '2019-03-20', 55000, 'IT'),
+('Charlie Lee', 'Analyst', '2020-01-10', 60000, 'Finance'),
+('David Brown', 'Developer', '2021-06-17', 50000, 'IT'),
+('Eva White', 'Manager', '2017-11-23', 80000, 'Finance'),
+('Frank Green', 'Analyst', '2019-07-05', 58000, 'HR');
 
-2. **Select specific columns:**
-   ```sql
-   SELECT name, role FROM employees;
-   ```
-   This query displays only the `name` and `role` columns of the employees.
+-- Creating a "Departments" table to explore Joins later
+CREATE TABLE departments (
+    dept_id SERIAL PRIMARY KEY,  -- Unique ID for department
+    department_name VARCHAR(50),  -- Name of the department
+    location VARCHAR(50)  -- Location of the department
+);
 
-3. **Using Aliases for Better Readability:**
-   ```sql
-   SELECT name AS "Employee Name", role AS "Job Role" FROM employees;
-   ```
-   Aliases (`AS`) can be used to rename columns in the result set for better clarity.
+-- Inserting sample data into the "Departments" table
+INSERT INTO departments (department_name, location) VALUES
+('HR', 'New York'),
+('IT', 'San Francisco'),
+('Finance', 'Chicago'),
+('Marketing', 'Los Angeles');
 
----
+-- ====================================================
+-- PRACTICE EXAMPLES
+-- ====================================================
 
-#### **3. Filtering Rows with WHERE Clause**
+-- 1. Retrieving Data with SELECT Statement
+-- Retrieve all columns from the "employees" table.
+SELECT * FROM employees;
 
-The `WHERE` clause is used to filter records based on specific conditions. It only returns rows that meet the criteria defined in the condition.
+-- Retrieve specific columns: Employee Name and Role.
+SELECT name, role FROM employees;
 
-**Syntax:**
-```sql
-SELECT column1, column2
-FROM table_name
-WHERE condition;
-```
+-- Use aliases to rename columns in the result set.
+SELECT name AS "Employee Name", salary AS "Annual Salary" FROM employees;
 
-- **Key Components:**
-  - **`WHERE`**: Specifies the condition that must be met for a row to be included.
+-- 2. Filtering Rows with WHERE Clause
+-- Get all employees in the "IT" department.
+SELECT name, role FROM employees
+WHERE department = 'IT';
 
-**Examples:**
-1. **Retrieve employees in a specific role:**
-   ```sql
-   SELECT name, role FROM employees
-   WHERE role = 'Manager';
-   ```
-   This query returns only those employees whose role is `Manager`.
+-- Retrieve employees hired after 2019.
+SELECT name, hire_date FROM employees
+WHERE hire_date > '2019-12-31';
 
-2. **Using multiple conditions with AND/OR:**
-   ```sql
-   SELECT name, salary FROM employees
-   WHERE salary > 50000 AND role = 'Developer';
-   ```
-   This query filters employees who are Developers and earn more than 50,000.
-
-3. **Using Pattern Matching with LIKE:**
-   ```sql
-   SELECT name FROM employees
-   WHERE name LIKE 'A%';
-   ```
-   This query returns employee names starting with the letter 'A'.
-
----
-
-#### **4. Sorting Results with ORDER BY**
-
-The `ORDER BY` clause is used to sort the result set based on one or more columns. By default, it sorts in ascending order, but you can specify descending order as well.
-
-**Syntax:**
-```sql
-SELECT column1, column2
-FROM table_name
-ORDER BY column1 [ASC|DESC];
-```
-
-- **Key Components:**
-  - **`ORDER BY`**: Specifies the column to sort by.
-  - **`ASC`**: Sorts in ascending order (default).
-  - **`DESC`**: Sorts in descending order.
-
-**Examples:**
-1. **Sort employees by salary in ascending order:**
-   ```sql
-   SELECT name, salary FROM employees
-   ORDER BY salary ASC;
-   ```
-   This query sorts employees by salary, showing the lowest salary first.
-
-2. **Sort employees by name in descending order:**
-   ```sql
-   SELECT name, role FROM employees
-   ORDER BY name DESC;
-   ```
-   This query sorts employees by their names in reverse alphabetical order.
-
-3. **Sort by multiple columns:**
-   ```sql
-   SELECT name, role, salary FROM employees
-   ORDER BY role ASC, salary DESC;
-   ```
-   This query sorts first by role in ascending order, and then by salary within each role in descending order.
-
----
-
-#### **5. Introduction to Data Types in SQL**
-
-Data types define the kind of data that can be stored in a column. Choosing the right data type is crucial for data integrity, performance, and precision.
-
-- **Common Data Types:**
-  1. **Integer Types:**
-     - `INTEGER`: Standard integer.
-     - `SMALLINT`, `BIGINT`: Variants for smaller or larger ranges.
-  
-  2. **String Types:**
-     - `VARCHAR(n)`: Variable-length string.
-     - `CHAR(n)`: Fixed-length string.
-     - `TEXT`: Unlimited-length string.
-
-  3. **Date and Time Types:**
-     - `DATE`: Stores date (Year-Month-Day).
-     - `TIME`: Stores time (Hours:Minutes:Seconds).
-     - `TIMESTAMP`: Stores date and time.
-
-  4. **Boolean Type:**
-     - `BOOLEAN`: Stores `TRUE`, `FALSE`, or `NULL`.
-
-- **Example of Using Data Types:**
-  ```sql
-  CREATE TABLE employees (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(50),
-      hire_date DATE,
-      salary NUMERIC(10, 2)
-  );
-  ```
-  This table uses `VARCHAR` for names, `DATE` for hire dates, and `NUMERIC` for salary values.
-
----
-
-#### **6. Basic Operators in SQL**
-
-Operators are used in SQL to perform operations on data, including arithmetic, comparison, and logical operations.
-
-1. **Arithmetic Operators:**
-   - `+`: Addition
-   - `-`: Subtraction
-   - `*`: Multiplication
-   - `/`: Division
-
-2. **Comparison Operators:**
-   - `=`: Equal to
-   - `<>` or `!=`: Not equal to
-   - `>`: Greater than
-   - `<`: Less than
-
-3. **Logical Operators:**
-   - `AND`: Returns true if both conditions are true.
-   - `OR`: Returns true if either condition is true.
-   - `NOT`: Reverses the result of a condition.
-
-**Example:**
-```sql
+-- Use multiple conditions with AND/OR operators.
+-- Get all Managers in the "HR" department earning more than 60,000.
 SELECT name, salary FROM employees
-WHERE salary > 40000 AND role = 'Analyst';
-```
-This query retrieves all analysts earning more than 40,000, combining conditions with `AND`.
+WHERE role = 'Manager' AND department = 'HR' AND salary > 60000;
 
----
+-- 3. Sorting Results with ORDER BY
+-- Sort employees by salary in ascending order.
+SELECT name, salary FROM employees
+ORDER BY salary ASC;
+
+-- Sort employees by hire date in descending order.
+SELECT name, hire_date FROM employees
+ORDER BY hire_date DESC;
+
+-- Sort by multiple columns: first by department, then by salary.
+SELECT name, department, salary FROM employees
+ORDER BY department ASC, salary DESC;
+
+-- 4. Introduction to Data Types in SQL
+-- Retrieve all employees with salary and display the type of salary.
+SELECT name, salary, pg_typeof(salary) AS "Salary Data Type" FROM employees;
+
+-- Display different data types: names (VARCHAR) and hire_date (DATE).
+SELECT name, hire_date, pg_typeof(hire_date) AS "Hire Date Type" FROM employees;
+
+-- 5. Using Basic Operators in SQL
+-- Arithmetic Operators: Calculate bonus (10% of salary).
+SELECT name, salary, (salary * 0.10) AS "Bonus" FROM employees;
+
+-- Comparison Operators: Find employees with salaries greater than 60,000.
+SELECT name, salary FROM employees
+WHERE salary > 60000;
+
+-- Logical Operators: Employees in IT or earning more than 60,000.
+SELECT name, department, salary FROM employees
+WHERE department = 'IT' OR salary > 60000;
+
+-- 6. Practical Examples with SELECT, WHERE, and ORDER BY
+-- Example 1: Find all employees hired between 2018 and 2020, sorted by hire_date.
+SELECT name, hire_date FROM employees
+WHERE hire_date BETWEEN '2018-01-01' AND '2020-12-31'
+ORDER BY hire_date;
+
+-- Example 2: Display the highest and lowest salary in each department.
+SELECT department, MAX(salary) AS "Highest Salary", MIN(salary) AS "Lowest Salary"
+FROM employees
+GROUP BY department;
+
+-- Example 3: Use pattern matching to find employees with names starting with 'D'.
+SELECT name FROM employees
+WHERE name LIKE 'D%';
+
+-- Example 4: Find employees who are either Managers or have a salary below 60,000.
+SELECT name, role, salary FROM employees
+WHERE role = 'Manager' OR salary < 60000;
+
+-- Example 5: Combine filtering, sorting, and arithmetic operations.
+-- Get employees' names and salaries with a 5% raise, sorted by the new salary.
+SELECT name, salary, (salary * 1.05) AS "New Salary"
+FROM employees
+ORDER BY "New Salary" DESC;
+
+```
