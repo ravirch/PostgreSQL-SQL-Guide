@@ -48,6 +48,8 @@ This repository serves as a structured guide to mastering SQL using PostgreSQL. 
    - [Read more examples here](https://github.com/ravirch/PostgreSQL-SQL-Guide/blob/main/Examples/Examples%20Data%20Modification%20Commands.md)
 
 7. **Real-World Case Studies**
-   - Case Study 1: Sales Analysis with SQL
-   - Case Study 2: Employee Management and Reporting
-   - Case Study 3: Customer Segmentation with SQL
+   - Case Study 1: [Sales Analysis with SQL](https://github.com/ravirch/PostgreSQL-SQL-Guide/blob/main/Case%20Studies/Sales%20Analysis%20with%20SQL.md)
+   - Case Study 2: [Customer Segmentation with SQL](https://github.com/ravirch/PostgreSQL-SQL-Guide/blob/main/Case%20Studies/Customer%20Segmentation%20with%20SQL.md)
+
+8. **Self Practice**
+   - Case Study: Employee Management and Reporting: Read the solved case studies from section 7 and apply your analytical skills to create similar case study on Employee managemenet & reporting.
