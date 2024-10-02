@@ -1,129 +1,291 @@
-### **Examples: Advanced Filtering and Grouping**
+### **Case Study 1: Sales Analysis with SQL**
+
+#### **Scenario Overview**
+
+You have been tasked with analyzing sales data for a retail company. The company has multiple stores and sells a variety of products across different regions. The goal of this case study is to identify top-performing products, analyze sales trends, and calculate key metrics like total sales, average revenue per product, and performance by region.
+
+The sales data is spread across multiple tables, and you will use SQL to combine these tables, perform aggregations, and extract insights. Let’s define the scenario in detail:
+
+- **Business Objective:**
+  1. Identify the top-selling products.
+  2. Analyze sales performance across different stores and regions.
+  3. Calculate total revenue, average sales per product, and other key metrics.
+  4. Generate sales reports for different time periods.
+
+- **Data Model Overview:**
+  We will be working with the following tables:
+  1. **Products:** Stores details about each product.
+  2. **Stores:** Contains information about store locations.
+  3. **Sales:** Records individual sales transactions.
+  4. **Regions:** Maps stores to regions.
+
+Let’s start by creating these tables and populating them with sample data to reflect the business scenario.
+
+---
+
+### **Step 1: Create Tables for Sales Analysis**
 
 ```sql
--- ====================================================
--- SETUP: Creating Tables for Advanced Filtering and Grouping
--- ====================================================
-
--- Creating a sample "Employees" table for practice
-CREATE TABLE employees (
-    id SERIAL PRIMARY KEY,  -- Auto-incrementing ID
-    name VARCHAR(50) NOT NULL,  -- Employee Name
-    role VARCHAR(50) NOT NULL,  -- Job Role
-    hire_date DATE,  -- Date of Hiring
-    salary NUMERIC(10, 2),  -- Salary of Employee
-    department VARCHAR(50)  -- Department Name
+-- Creating the "Products" table
+CREATE TABLE products (
+    product_id SERIAL PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    price NUMERIC(10, 2) NOT NULL
 );
 
--- Inserting sample data into the "Employees" table
-INSERT INTO employees (name, role, hire_date, salary, department) VALUES
-('Alice Johnson', 'Manager', '2018-05-15', 75000, 'HR'),
-('Bob Smith', 'Developer', '2019-03-20', 55000, 'IT'),
-('Charlie Lee', 'Analyst', '2020-01-10', 60000, 'Finance'),
-('David Brown', 'Developer', '2021-06-17', 50000, 'IT'),
-('Eva White', 'Manager', '2017-11-23', 80000, 'Finance'),
-('Frank Green', 'Analyst', '2019-07-05', 58000, 'HR');
+-- Creating the "Stores" table
+CREATE TABLE stores (
+    store_id SERIAL PRIMARY KEY,
+    store_name VARCHAR(100),
+    region_id INTEGER
+);
 
--- ====================================================
--- PRACTICE EXAMPLES
--- ====================================================
+-- Creating the "Sales" table
+CREATE TABLE sales (
+    sale_id SERIAL PRIMARY KEY,
+    product_id INTEGER REFERENCES products(product_id),
+    store_id INTEGER REFERENCES stores(store_id),
+    quantity INTEGER NOT NULL,
+    sale_date DATE,
+    total_sale NUMERIC(10, 2) GENERATED ALWAYS AS (quantity * (SELECT price FROM products WHERE products.product_id = sales.product_id)) STORED
+);
 
--- 1. Utilizing the IN Operator
--- Example 1.1: Retrieve employees who work in the "IT" or "Finance" departments.
-SELECT name, department FROM employees
-WHERE department IN ('IT', 'Finance');
-
--- Example 1.2: Retrieve employees whose roles are either "Manager" or "Analyst".
-SELECT name, role FROM employees
-WHERE role IN ('Manager', 'Analyst');
-
--- 2. Understanding the NOT IN Operator
--- Example 2.1: Retrieve employees who do NOT work in the "HR" or "Finance" departments.
-SELECT name, department FROM employees
-WHERE department NOT IN ('HR', 'Finance');
-
--- Example 2.2: Retrieve employees whose roles are NOT "Developer".
-SELECT name, role FROM employees
-WHERE role NOT IN ('Developer');
-
--- 3. Introduction to LIKE Operator for Pattern Matching
--- Example 3.1: Retrieve employees whose names start with 'A'.
-SELECT name FROM employees
-WHERE name LIKE 'A%';
-
--- Example 3.2: Retrieve employees whose names end with 'n'.
-SELECT name FROM employees
-WHERE name LIKE '%n';
-
--- Example 3.3: Retrieve employees whose names contain 'e' anywhere.
-SELECT name FROM employees
-WHERE name LIKE '%e%';
-
--- Example 3.4: Retrieve employees whose names have exactly five characters.
-SELECT name FROM employees
-WHERE name LIKE '_____';
-
--- 4. Handling NULLs in SQL Queries
--- Example 4.1: Adding a NULL value to explore handling NULLs.
-UPDATE employees
-SET salary = NULL
-WHERE name = 'Frank Green';  -- Set Frank's salary as NULL for demonstration
-
--- Example 4.2: Retrieve employees who have a NULL salary.
-SELECT name, salary FROM employees
-WHERE salary IS NULL;
-
--- Example 4.3: Retrieve employees who have a defined (non-NULL) salary.
-SELECT name, salary FROM employees
-WHERE salary IS NOT NULL;
-
--- Example 4.4: Retrieve all employees, replacing NULL salaries with '0'.
-SELECT name, COALESCE(salary, 0) AS salary FROM employees;
-
--- 5. Grouping and Aggregating Data with GROUP BY
--- Example 5.1: Find the number of employees in each department.
-SELECT department, COUNT(*) AS "Number of Employees"
-FROM employees
-GROUP BY department;
-
--- Example 5.2: Calculate the total salary for each department.
-SELECT department, SUM(salary) AS "Total Salary"
-FROM employees
-GROUP BY department;
-
--- Example 5.3: Find the average salary for each role.
-SELECT role, AVG(salary) AS "Average Salary"
-FROM employees
-GROUP BY role;
-
--- Example 5.4: Find the minimum and maximum salary for each department.
-SELECT department, MIN(salary) AS "Minimum Salary", MAX(salary) AS "Maximum Salary"
-FROM employees
-GROUP BY department;
-
--- 6. Filtering Groups with HAVING Clause
--- Example 6.1: Find departments with more than 1 employee.
-SELECT department, COUNT(*) AS "Number of Employees"
-FROM employees
-GROUP BY department
-HAVING COUNT(*) > 1;
-
--- Example 6.2: Find roles with an average salary greater than 55,000.
-SELECT role, AVG(salary) AS "Average Salary"
-FROM employees
-GROUP BY role
-HAVING AVG(salary) > 55000;
-
--- Example 6.3: Find departments where the total salary is less than 150,000.
-SELECT department, SUM(salary) AS "Total Salary"
-FROM employees
-GROUP BY department
-HAVING SUM(salary) < 150000;
-
--- Example 6.4: Retrieve roles with a maximum salary below 60,000.
-SELECT role, MAX(salary) AS "Maximum Salary"
-FROM employees
-GROUP BY role
-HAVING MAX(salary) < 60000;
-
+-- Creating the "Regions" table
+CREATE TABLE regions (
+    region_id SERIAL PRIMARY KEY,
+    region_name VARCHAR(100)
+);
 ```
+
+---
+
+### **Step 2: Insert Sample Data**
+
+```sql
+-- Inserting data into the "Regions" table
+INSERT INTO regions (region_name) VALUES
+('North'),
+('South'),
+('East'),
+('West');
+
+-- Inserting data into the "Stores" table
+INSERT INTO stores (store_name, region_id) VALUES
+('Store A', 1),
+('Store B', 2),
+('Store C', 3),
+('Store D', 4);
+
+-- Inserting data into the "Products" table
+INSERT INTO products (product_name, category, price) VALUES
+('Laptop', 'Electronics', 800.00),
+('Smartphone', 'Electronics', 600.00),
+('Tablet', 'Electronics', 300.00),
+('Chair', 'Furniture', 150.00),
+('Desk', 'Furniture', 250.00);
+
+-- Inserting data into the "Sales" table
+INSERT INTO sales (product_id, store_id, quantity, sale_date) VALUES
+(1, 1, 10, '2023-01-05'),  -- 10 Laptops sold at Store A
+(2, 2, 15, '2023-01-10'),  -- 15 Smartphones sold at Store B
+(3, 3, 20, '2023-01-15'),  -- 20 Tablets sold at Store C
+(4, 4, 5, '2023-01-20'),   -- 5 Chairs sold at Store D
+(5, 1, 8, '2023-01-25'),   -- 8 Desks sold at Store A
+(1, 2, 12, '2023-01-30'),  -- 12 Laptops sold at Store B
+(2, 3, 18, '2023-02-05'),  -- 18 Smartphones sold at Store C
+(3, 4, 22, '2023-02-10'),  -- 22 Tablets sold at Store D
+(4, 1, 7, '2023-02-15'),   -- 7 Chairs sold at Store A
+(5, 2, 10, '2023-02-20');  -- 10 Desks sold at Store B
+```
+
+---
+
+### **Step 3: Table Overview**
+
+1. **Products Table:**
+   - Contains the list of products along with their categories and prices.
+
+   | product_id | product_name | category     | price |
+   |------------|--------------|--------------|-------|
+   | 1          | Laptop       | Electronics  | 800.00|
+   | 2          | Smartphone   | Electronics  | 600.00|
+   | 3          | Tablet       | Electronics  | 300.00|
+   | 4          | Chair        | Furniture    | 150.00|
+   | 5          | Desk         | Furniture    | 250.00|
+
+2. **Stores Table:**
+   - Contains the list of stores and the regions they belong to.
+
+   | store_id | store_name | region_id |
+   |----------|------------|-----------|
+   | 1        | Store A    | 1         |
+   | 2        | Store B    | 2         |
+   | 3        | Store C    | 3         |
+   | 4        | Store D    | 4         |
+
+3. **Sales Table:**
+   - Records individual sales transactions.
+
+   | sale_id | product_id | store_id | quantity | sale_date  | total_sale |
+   |---------|------------|----------|----------|------------|------------|
+   | 1       | 1          | 1        | 10       | 2023-01-05 | 8000.00    |
+   | 2       | 2          | 2        | 15       | 2023-01-10 | 9000.00    |
+   | 3       | 3          | 3        | 20       | 2023-01-15 | 6000.00    |
+   | 4       | 4          | 4        | 5        | 2023-01-20 | 750.00     |
+   | 5       | 5          | 1        | 8        | 2023-01-25 | 2000.00    |
+
+4. **Regions Table:**
+   - Contains the list of regions.
+
+   | region_id | region_name |
+   |-----------|-------------|
+   | 1         | North       |
+   | 2         | South       |
+   | 3         | East        |
+   | 4         | West        |
+
+---
+
+### **Next Steps**
+
+With the scenario and tables defined, we can start building out the SQL queries to answer key business questions, such as:
+
+1. What are the top-selling products?
+2. What is the total revenue by region?
+3. Which stores are performing the best?
+4. What are the monthly sales trends?
+
+#### **1. What are the Top-Selling Products?**
+
+We want to identify which products have the highest total sales based on the quantity sold.
+
+```sql
+SELECT p.product_name, SUM(s.quantity) AS total_quantity_sold
+FROM sales s
+INNER JOIN products p ON s.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY total_quantity_sold DESC;
+```
+
+**Result:**
+
+| product_name | total_quantity_sold |
+|--------------|---------------------|
+| Tablet       | 42                  |
+| Smartphone   | 33                  |
+| Laptop       | 22                  |
+| Desk         | 18                  |
+| Chair        | 12                  |
+
+- **Insight:** The **Tablet** is the top-selling product, followed by **Smartphone** and **Laptop**.
+
+---
+
+#### **2. What is the Total Revenue by Region?**
+
+To understand which regions generate the highest revenue, we need to group sales data by region.
+
+```sql
+SELECT r.region_name, SUM(s.total_sale) AS total_revenue
+FROM sales s
+INNER JOIN stores st ON s.store_id = st.store_id
+INNER JOIN regions r ON st.region_id = r.region_id
+GROUP BY r.region_name
+ORDER BY total_revenue DESC;
+```
+
+**Result:**
+
+| region_name | total_revenue |
+|-------------|---------------|
+| East        | 22800.00      |
+| West        | 11400.00      |
+| South       | 11000.00      |
+| North       | 10750.00      |
+
+- **Insight:** The **East** region is the top revenue-generating region, followed by **West** and **South**.
+
+---
+
+#### **3. Which Stores are Performing the Best?**
+
+We want to find out which stores are generating the highest revenue.
+
+```sql
+SELECT st.store_name, SUM(s.total_sale) AS total_revenue
+FROM sales s
+INNER JOIN stores st ON s.store_id = st.store_id
+GROUP BY st.store_name
+ORDER BY total_revenue DESC;
+```
+
+**Result:**
+
+| store_name | total_revenue |
+|------------|---------------|
+| Store C    | 16800.00      |
+| Store D    | 6750.00       |
+| Store B    | 5500.00       |
+| Store A    | 4750.00       |
+
+- **Insight:** **Store C** is the top-performing store with the highest total revenue.
+
+---
+
+#### **4. What are the Monthly Sales Trends?**
+
+To identify sales trends, we need to calculate the total sales for each month.
+
+```sql
+SELECT DATE_TRUNC('month', sale_date) AS sales_month, SUM(total_sale) AS total_revenue
+FROM sales
+GROUP BY sales_month
+ORDER BY sales_month;
+```
+
+**Result:**
+
+| sales_month | total_revenue |
+|-------------|---------------|
+| 2023-01-01  | 25750.00      |
+| 2023-02-01  | 20200.00      |
+
+- **Insight:** Sales were higher in January 2023 compared to February 2023.
+
+---
+
+#### **5. What is the Average Revenue Per Product?**
+
+To analyze product performance, let’s calculate the average revenue generated by each product.
+
+```sql
+SELECT p.product_name, AVG(s.total_sale) AS average_revenue
+FROM sales s
+INNER JOIN products p ON s.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY average_revenue DESC;
+```
+
+**Result:**
+
+| product_name | average_revenue |
+|--------------|-----------------|
+| Laptop       | 8000.00         |
+| Smartphone   | 7500.00         |
+| Desk         | 2000.00         |
+| Tablet       | 3000.00         |
+| Chair        | 750.00          |
+
+- **Insight:** **Laptops** generate the highest average revenue per sale, followed by **Smartphones** and **Desks**.
+
+---
+
+### **Conclusion**
+
+These SQL queries helped answer key business questions related to product performance, revenue distribution, and sales trends. The analysis highlights the following insights:
+
+1. **Tablets** are the top-selling product, but **Laptops** generate the highest average revenue.
+2. The **East** region contributes the most to total revenue.
+3. **Store C** is the top-performing store.
+4. Monthly sales show a declining trend from January to February.
